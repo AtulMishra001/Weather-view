@@ -8,6 +8,9 @@
 
 @layer{
     .bgBlur{
-        @apply bg-black/5 backdrop-blur-xl
+        @apply bg-black/24 backdrop-blur-xl
+    }
+    .roundedShadow {
+        @apply rounded-[20px] shadow-2xl
     }
 }
