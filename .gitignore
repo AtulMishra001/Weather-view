@@ -3,5 +3,4 @@ project.pdf
 node_modules/
 dist/
 .env
-.ds_store
 .DS_Store

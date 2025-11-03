@@ -12,6 +12,7 @@
   "description": "",
   "dependencies": {
     "@tailwindcss/cli": "^4.1.14",
+    "dotenv": "^17.2.3",
     "tailwindcss": "^4.1.14"
   }
 }
