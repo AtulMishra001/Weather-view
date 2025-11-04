@@ -236,12 +236,6 @@
   .min-h-screen {
     min-height: 100vh;
   }
-  .w-\[40\%\] {
-    width: 40%;
-  }
-  .w-\[41\%\] {
-    width: 41%;
-  }
   .w-\[43\%\] {
     width: 43%;
   }
@@ -310,9 +304,6 @@
   }
   .self-end {
     align-self: flex-end;
-  }
-  .overflow-x-hidden {
-    overflow-x: hidden;
   }
   .rounded-3xl {
     border-radius: var(--radius-3xl);

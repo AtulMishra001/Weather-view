@@ -52,9 +52,48 @@ function unitConvertor(temp, convertTo) {
 }
 
 //this functon renders the forcast card.
-function renderforcast(forecastList) {
+function renderforcast(list) {
+  let date = new Date(list[0].dt * 1000);
+  let hourOfTheDay = date.getUTCHours();  
+  let i = (24 - hourOfTheDay)/3;
+  let forecastContainer = document.querySelector(".forcast-container");
+  while(i < list.length) {
+    let card = document.createElement("div");
+    card.innerHTML = `<div
+          class="w-[270px] h-[350px] bgBlur roundedShadow flex justify-center items-center"
+        >
+          <div class="w-[90%] h-[90%] bg-sky-500 rounded-[20px]">
+            <div class="flex justify-around items-center">
+              <img
+                src="https://openweathermap.org/img/wn/${list[i].weather[0].icon}@2x.png" class="" alt=""
+              />
+              <div class="flex flex-col gap-2">
+                <span class="inline-block w-full text-center text-4xl">${Math.round(list[i].main.temp)}°C</span>
+                <span class="inline-block w-full text-center text-2xl card-date">31<sup>st</sup>Oct</span>
+              </div>
+            </div>
+            <p class="description w-full text-center">${list[i].weather[0].description}</p>
+            <div
+              class="flex justify-between content-center-safe flex-wrap w-[100%] h-[68%] rounded-b-[20px] p-2 text-center"
+            >
+              <span class="w-[45%] mb-[10px]">Feels like</span>
+              <span class="w-[45%] mb-[10px]">${list[i].main.feels_like}</span>
+              <span class="w-[45%] mb-[10px]">Wind Speed</span>
+              <span class="w-[45%] mb-[10px]">${list[i].wind.speed}m/s</span>
+              <span class="w-[45%] mb-[10px]">cloudiness</span>
+              <span class="w-[45%] mb-[10px]">${list[i].clouds.all}</span>
+              <span class="w-[45%] mb-[10px]">Humidity</span>
+              <span class="w-[45%] mb-[10px]">${list[i].main.humidity}</span>
+            </div>
+          </div>
+        </div>`;
+    i = i +8;
+    forecastContainer.appendChild(card);
+  }
+ 
 
 }
+
 
 
 
@@ -67,7 +106,7 @@ async function fetchData(city) {
     // let res = await fetch(url);
     // let data = await res.json();
     // localStorage.setItem("data", JSON.stringify(data));
-    //the next line is only for development so that we don't have to call the api again and again
+    // the next line is only for development so that we don't have to call the api again and again
     return JSON.parse(localStorage.getItem("data"))
   }
   catch(error) {
@@ -87,7 +126,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     try {
       let value = e.target.value;
       validateSearch(value);
-      let data = fetchData("aligarh");
+      let data = fetchData(value);
       data.then((res) => renderforcast(res.list));
       
     } catch (error) {
