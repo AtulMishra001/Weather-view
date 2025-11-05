@@ -6,8 +6,16 @@ const search_btn = document.querySelector(".search-btn");
 const cities_buttons_list = document.querySelectorAll(".city-btn");
 //span which contains the unit in which temperature has to be chnaged
 const unit_change = document.querySelector(".unit-change");
+//search history container
+const searchHistoryContainer = document.querySelector(".search-history");
 //variable to keep track of unit
 let temp = "C"; //deflaut is celsius
+let recentSearch = false // recent search div is hidden by default
+
+
+if(!localStorage.getItem("recent")) {
+  localStorage.setItem("recent", JSON.stringify([]))
+}
 
 //function to validate search input checks for empty spaces, numbers and special characters.
 function validateSearch(search) {
@@ -66,7 +74,7 @@ function formateDate(dt) {
   }
   return `${day}${suffix} ${month}`
 }  
-//this functon renders the forcast card.
+//this functon renders the forcast card it receives an array of forecasts.
 function renderforcast(list) {
   const date = new Date(list[0].dt * 1000);
   const hourOfTheDay = date.getUTCHours();  
@@ -106,10 +114,18 @@ function renderforcast(list) {
     i = i +8;
     forecastContainer.appendChild(card);
   }
- 
-
 }
-//this function updates the data in main section.
+
+function renderRecentSearch() {
+  document.querySelector(".search-history").innerHTML = ""
+  const recentsearchArray = JSON.parse(localStorage.getItem("recent"));
+  recentsearchArray.forEach((item) => {
+    const p = document.createElement("p");
+    p.innerHTML = `<p class="search-item border-b-[1px] p-1 min-h-fit">${item}</p>`;
+    document.querySelector(".search-history").appendChild(p)
+  });
+}
+//this function updates the data in main section and adds the search city to recent search.
 function populateData(data) {
   const city = document.querySelector(".city");
   const temperature = document.querySelector(".temperature");
@@ -135,14 +151,21 @@ function populateData(data) {
   windDirection.innerText = data.list[0].wind.deg;
   pressure.innerText = data.list[0].main.pressure;
   cloud.innerText = `${data.list[0].clouds.all} %`
-
+  const recentSearchArr = JSON.parse(localStorage.getItem("recent"));
+  if(recentSearchArr.includes(data.city.name)) {
+    recentSearchArr.remove(data.city.name);
+    recentSearchArr.unshift(data.city.name);
+  }else {
+    recentSearchArr.unshift(data.city.name);
+  }
+  localStorage.setItem("recent", JSON.stringify(recentSearchArr));
+  renderRecentSearch();
 }
 //Fetch data function fetches the data from API and returns a promise.
 async function fetchData(city) {
     const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&units=metric`;
     let res = await fetch(url);
     let data = await res.json();
-    console.log(data.list[0].weather[0].main)
     if(!res.ok) {
       errorHandeler(data.message);
     }
@@ -151,6 +174,7 @@ async function fetchData(city) {
     // localStorage.setItem("data", JSON.stringify(data));
     // return JSON.parse(localStorage.getItem("data"));
 }
+
 
 document.addEventListener("DOMContentLoaded", (e) => {
   // capitalising the first character of users input in search bar
@@ -163,7 +187,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     //validating the the seach and catching error if there is any
     try {
       //defore fetching the data we will set the temperature unit to default.
-      document.querySelector(".unit").innerText = "C"
+      document.querySelector(".unit").innerText = "C";
       document.querySelector(".unit-change-to").innerText = "°F";
       let value = document.querySelector(".search").value;
       validateSearch(value);
@@ -171,14 +195,35 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
       let data = fetchData(value);
       data.then((res) => {
-        populateData(res)
-        renderforcast(res.list)
+        populateData(res);
+        renderforcast(res.list);
       });
     } catch (error) {
       errorHandeler(error);
     }
-  
 
+  });
+  
+  //click event for recent search items.
+  document.querySelector(".recent").addEventListener("click", (e) => {
+    if (recentSearch) {
+      searchHistoryContainer.classList.add("hidden");
+      recentSearch = false;
+      document.querySelector(".recent").innerText = "history";
+    } else {
+      searchHistoryContainer.classList.remove("hidden");
+      recentSearch = true;
+      document.querySelector(".recent").innerText = "close";
+
+      document.querySelectorAll(".search-item").forEach((searchItem) => {
+        searchItem.addEventListener("click", (e) => {
+          fetchData(e.target.innerText).then((data) => {
+            populateData(data);
+            renderforcast(data.list);
+          });
+        });
+      });
+    }
   });
 
   cities_buttons_list.forEach((city) => {
@@ -188,6 +233,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
       populateData(data)
     });
   });
+  renderRecentSearch();
 });
 
 const unit_change_event = unit_change.addEventListener("click", (e)=> {
@@ -210,7 +256,6 @@ const unit_change_event = unit_change.addEventListener("click", (e)=> {
 
     feels_like.dataset.temp = Math.round(unitConvertor(feels_like.dataset.temp, "F"));
     feels_like.innerText = feels_like.dataset.temp;
-
 
     unit.innerText = "F"
     unitChangeTo.innerText = "C" 
