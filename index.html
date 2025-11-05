@@ -14,17 +14,20 @@
     class="bg-[url(./assets/images/daySnow.png)] md:bg-right lg:bg-center bg-cover bg-no-repeat bg-right bg-fixed min-h-screen w-screen text-white flex flex-col gap-3 cursor-default items-center md:text-lg overflow-x-hiddenv"
   >
     <header
-      class="flex w-full px-4 h-[8%] rounded-xl p-1 justify-between cursor-default items-center max-w-[900px]"
+      class="flex w-full px-4 h-[8%] rounded-xl p-1 justify-between cursor-default items-center max-w-[900px] relative"
     >
       <span class="flex items-center gap-2">
         <span class="material-symbols-outlined">partly_cloudy_day</span>
         <span class="font-Lato text-lg">Weather View</span>
       </span>
       <span
-        class="material-symbols-outlined self-end bg-black p-1 rounded-[50%]"
+        class="material-symbols-outlined self-end bg-black p-1 rounded-[50%] recent"
         title="recent searchs"
         >history</span
       >
+      <div class="search-history bgBlur hidden roundedShadow absolute w-[150px] max-h-[200px] overflow-y-scroll p-2 rounded-lg text-center z-99 right-4 top-10">
+        <p class="search-item border-b-[1px] p-1 min-h-fit">London</p>
+      </div>
     </header>
     <div
       class="search-container w-[90%] lg:w-[60%] p-2 px-3 roundedShadow bg-black/30 backdrop-blur-2xl"
@@ -48,7 +51,7 @@
           class="search border-b-1 focus:outline-0 md:ml-auto"
           placeholder="Search by city.."
         />
-        <button type="submit search-btn">
+        <button type="submit" class="search-btn">
           <span class="searchIcon material-symbols-outlined ml-1">search</span>
         </button>
         <span
@@ -62,7 +65,7 @@
       <div
         class="w-fit text-center text-2xl h-fit p-3 bgBlur roundedShadow m-auto"
       >
-        <h1 class="city">Tokyo,<span class="countryCode text-xl">JP</span></h1>
+        <h1 class="city">Tokyo,<span class="text-xl">JP</span></h1>
         <span class="text-3xl md:text-5xl">
           <span data-temp="31" class="temperature">31°</span> <span class="unit">C</span>
           <span class="unit-change text-center">
@@ -70,7 +73,7 @@
               >sync_alt</span
             ><span class="text-lg unit-change-to">°F</span>
           </span>
-          <p class="weatherDescription text-2xl">clear sky</p>
+          <p class="weather-description text-2xl">clear sky</p>
         </span>
       </div>
       <div class="flex justify-around md:w-[70%] md:mx-auto">
@@ -87,23 +90,23 @@
             <span>Temp. max.</span><span class="max-temp" data-temp="31">31.3</span>
           </p>
           <p class="w-full flex justify-between">
-            <span>Humidity</span><span>21</span>
+            <span>Humidity</span><span class="humidity">21</span>
           </p>
         </div>
         <div
           class="wind w-[43%] text-md mt-auto p-3 bgBlur roundedShadow lg:max-w-[300px]"
         >
           <p class="w-full flex justify-between">
-            <span>Wind Speed</span><span>31.3</span>
+            <span>Wind Speed</span><span class="wind-speed">31.3</span>
           </p>
           <p class="w-full flex justify-between">
-            <span>Cloudiness</span><span>0%</span>
+            <span>Cloudiness</span><span class="cloud">0%</span>
           </p>
           <p class="w-full flex justify-between">
-            <span>pressure</span><span>31.3</span>
+            <span>pressure</span><span class="pressure">31.3</span>
           </p>
           <p class="w-full flex justify-between">
-            <span>wind Direction</span><span>21°</span>
+            <span>wind Direction</span><span class="wind-direction">21°</span>
           </p>
         </div>
       </div>
@@ -114,8 +117,6 @@
       <div
         class="forcast-container w-[90%] mx-auto flex-1 flex gap-3 flex-wrap justify-between p-3"
       >
-        
-        
       </div>
     </div>
     <script type="module" src="./app.js"></script>
