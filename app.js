@@ -246,8 +246,9 @@ function populateData(data) {
   changeBG(data.list[0].weather[0].main);
   const city = document.querySelector(".city");
   const temperature = document.querySelector(".temperature");
-  const feelsLike = document.querySelector(".feels-like")
-  const minTemp = document.querySelector(".min-temp")
+  const weatherDescription = document.querySelector(".weather-description");
+  const feelsLike = document.querySelector(".feels-like");
+  const minTemp = document.querySelector(".min-temp");
   const maxTemp = document.querySelector(".max-temp")
   const humidity = document.querySelector(".humidity")
   const windSpeed = document.querySelector(".wind-speed");
@@ -268,6 +269,7 @@ function populateData(data) {
   windDirection.innerText = data.list[0].wind.deg;
   pressure.innerText = data.list[0].main.pressure;
   cloud.innerText = `${data.list[0].clouds.all} %`
+  weatherDescription.innerText = data.list[0].weather[0].description;
   const recentSearchArr = JSON.parse(localStorage.getItem("recent"));
   if(recentSearchArr.includes(data.city.name)) {    
     recentSearchArr.splice(recentSearchArr.indexOf(data.city.name),1);

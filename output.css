@@ -10,7 +10,6 @@
       "Courier New", monospace;
     --color-red-300: oklch(80.8% 0.114 19.571);
     --color-red-600: oklch(57.7% 0.245 27.325);
-    --color-amber-700: oklch(55.5% 0.163 48.998);
     --color-sky-500: oklch(68.5% 0.169 237.323);
     --color-black: #000;
     --color-white: #fff;
@@ -346,6 +345,9 @@
   .gap-3 {
     gap: calc(var(--spacing) * 3);
   }
+  .gap-5 {
+    gap: calc(var(--spacing) * 5);
+  }
   .self-end {
     align-self: flex-end;
   }
@@ -400,9 +402,6 @@
   }
   .bg-sky-500 {
     background-color: var(--color-sky-500);
-  }
-  .bg-\[url\(\.\/assets\/images\/daySnow\.png\)\] {
-    background-image: url(./assets/images/daySnow.png);
   }
   .bg-cover {
     background-size: cover;
