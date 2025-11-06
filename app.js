@@ -16,7 +16,67 @@ let recentSearch = false // recent search div is hidden by default
 if(!localStorage.getItem("recent")) {
   localStorage.setItem("recent", JSON.stringify([]))
 }
+getUserLocation() //calling the getUserLocation function immediately to show user their weather data.
 
+// this function gets the user's precise coordinates for location search.
+function getUserLocation() {
+  // Checks if the browser supports the Geolocation API
+  if (navigator.geolocation) {
+    // Options for high accuracy and a timeout
+    const options = {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0,
+    };
+
+    navigator.geolocation.getCurrentPosition(
+      (position)=> {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        geoCoding(latitude, longitude)
+      }, // Function to run on success
+      (error)=> {
+        let errorMessage =
+          "Could not retrieve location. Please ensure location services are enabled.";
+
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            // User blocked location access
+            errorMessage = "Location access denied by the user.";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            // Location information is unavailable
+            errorMessage = "Location information is unavailable.";
+            break;
+          case error.TIMEOUT:
+            // Request timed out
+            errorMessage = "Location request timed out.";
+            break;
+        }
+        console.error("Geolocation Error:", errorMessage);
+        errorHandeler(error);
+      }, // Function to run on failure
+      options
+    );
+  } else {
+    alert("Geolocation is not supported by this browser.");
+  }
+}
+//this function converts the latitude and longitude to city name and populates the data on screen.
+async function geoCoding(lat, lon) {
+  try{
+    const url = `http://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=5&appid=${API_KEY}`;
+    const res = await fetch(url);
+    const cityData = await res.json();
+    const city = cityData[0].name;
+    const data = await fetchData(city);
+    populateData(data);
+    renderforcast(data.list);
+  } catch(error) {
+    errorHandeler("error fetching current location.");
+  }
+  
+}
 //function to validate search input checks for empty spaces, numbers and special characters.
 function validateSearch(search) {
   let input = search.trim();
@@ -27,6 +87,60 @@ function validateSearch(search) {
     throw new Error("Numbers and special characters are not allowed");
   }
 }
+
+//this function changes the background based in main weather condition.
+function changeBG(value) {
+  let body = document.body;
+  switch (value) {
+    case "Clear":
+      body.style.backgroundImage = "url('./images/sunny.png')";
+      break;
+    case "Clouds":
+      body.style.backgroundImage = "url('./images/clouds.png')";
+      break;
+    case "Rain":
+      body.style.backgroundImage = "url('./images/rain.png')";
+      break;
+    case "Thunderstorm":
+      body.style.backgroundImage = "url('./images/storm.png')";
+      break;
+    case "Snow":
+      body.style.backgroundImage = "url('./images/snow.png')";
+      break;
+    case "Mist":
+      body.style.backgroundImage = "url('./images/atmosphere.png')";
+      break;
+    case "Smoke":
+      body.style.backgroundImage = "url('./images/atmosphere.png')";
+      break;
+    case "Haze":
+      body.style.backgroundImage = "url('./images/atmosphere.png')";
+      break;
+    case "Dust":
+      body.style.backgroundImage = "url('./images/atmosphere.png')";
+      break;
+    case "Fog":
+      body.style.backgroundImage = "url('./images/atmosphere.png')";
+      break;
+    case "Sand":
+      body.style.backgroundImage = "url('./images/atmosphere.png')";
+      break;
+    case "Ash":
+      body.style.backgroundImage = "url('./images/atmosphere.png')";
+      break;
+    case "Squall":
+      body.style.backgroundImage = "url('./images/atmosphere.png')";
+      break;
+    case "Tornado":
+      body.style.backgroundImage = "url('./images/atmosphere.png')";
+      break;
+
+    default:
+      body.style.backgroundImage = "url('./images/sunny.png')";
+      break;
+  }
+}
+
 //Error handeler function displays the errors for some seconds.
 function errorHandeler(error) {
   const errordiv = document.createElement("div");
@@ -114,6 +228,7 @@ function renderforcast(list) {
     i = i +8;
     forecastContainer.appendChild(card);
   }
+  console.log(list[0].weather[0].main)
 }
 
 function renderRecentSearch() {
@@ -127,6 +242,8 @@ function renderRecentSearch() {
 }
 //this function updates the data in main section and adds the search city to recent search.
 function populateData(data) {
+  
+  changeBG(data.list[0].weather[0].main);
   const city = document.querySelector(".city");
   const temperature = document.querySelector(".temperature");
   const feelsLike = document.querySelector(".feels-like")
@@ -152,8 +269,8 @@ function populateData(data) {
   pressure.innerText = data.list[0].main.pressure;
   cloud.innerText = `${data.list[0].clouds.all} %`
   const recentSearchArr = JSON.parse(localStorage.getItem("recent"));
-  if(recentSearchArr.includes(data.city.name)) {
-    recentSearchArr.remove(data.city.name);
+  if(recentSearchArr.includes(data.city.name)) {    
+    recentSearchArr.splice(recentSearchArr.indexOf(data.city.name),1);
     recentSearchArr.unshift(data.city.name);
   }else {
     recentSearchArr.unshift(data.city.name);
@@ -175,13 +292,15 @@ async function fetchData(city) {
     // return JSON.parse(localStorage.getItem("data"));
 }
 
-
 document.addEventListener("DOMContentLoaded", (e) => {
   // capitalising the first character of users input in search bar
-  const fillInput = document.querySelector(".search").addEventListener("input", (e) => {
-    let value = e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1);
-    e.target.value = value;
-  });
+  const fillInput = document
+    .querySelector(".search")
+    .addEventListener("input", (e) => {
+      let value =
+        e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1);
+      e.target.value = value;
+    });
 
   const searchEvent = search_btn.addEventListener("click", (e) => {
     //validating the the seach and catching error if there is any
@@ -201,9 +320,9 @@ document.addEventListener("DOMContentLoaded", (e) => {
     } catch (error) {
       errorHandeler(error);
     }
-
+    document.querySelector(".search").value = "";
   });
-  
+
   //click event for recent search items.
   document.querySelector(".recent").addEventListener("click", (e) => {
     if (recentSearch) {
@@ -229,11 +348,11 @@ document.addEventListener("DOMContentLoaded", (e) => {
   cities_buttons_list.forEach((city) => {
     city.addEventListener("click", async (e) => {
       const data = await fetchData(e.target.dataset.value);
-      renderforcast(data.list) 
-      populateData(data)
+      renderforcast(data.list);
+      populateData(data);
     });
+    renderRecentSearch();
   });
-  renderRecentSearch();
 });
 
 const unit_change_event = unit_change.addEventListener("click", (e)=> {
@@ -279,4 +398,8 @@ const unit_change_event = unit_change.addEventListener("click", (e)=> {
     unitChangeTo.innerText = "F";
     temp = "C"
   }
+})
+
+const localtion_event = document.querySelector(".location").addEventListener("click", (e)=> {
+  getUserLocation();
 })
