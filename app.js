@@ -1,5 +1,4 @@
 import { API_KEY } from "./config.js";
-
 //input
 const search_btn = document.querySelector(".search-btn");
 //city buttons
@@ -17,6 +16,33 @@ if(!localStorage.getItem("recent")) {
   localStorage.setItem("recent", JSON.stringify([]))
 }
 getUserLocation() //calling the getUserLocation function immediately to show user their weather data.
+
+//this function checks if alerts needed or not for extreme weather
+function showAlert(temp) {
+  const alertElement = document.querySelector(".alert");
+  const alertMessage = document.querySelector(".alert-message")
+  const alertSymbol = document.querySelector(".alert-symbol");
+  if(Math.round(temp) >= 40) {
+   alertSymbol.innerText = "emergency_heat";
+   alertMessage.innerText = "ALERT: Extreme Heat!";
+   alertElement.classList.add("bg-red-100" , "text-red-600");
+   alertElement.classList.remove("-translate-x-full");
+   setTimeout(()=> {
+    alertElement.classList.remove("bg-red-100", "text-red-600");
+    alertElement.classList.add("-translate-x-full");
+   }, 4000);
+  }
+  else if(Math.round(temp) <= 0) {
+    alertSymbol.innerText = "severe_cold";
+    alertMessage.innerText = "ALERT: Extreme Cold";
+    alertElement.classList.add("bg-blue-100", "text-blue-600");
+    alertElement.classList.remove("-translate-x-full");
+    setTimeout(()=> {
+      alertElement.classList.remove("bg-blue-100", "text-blue-600");
+      alertElement.classList.add("-translate-x-full");
+    },4000)
+  }
+}
 
 // this function gets the user's precise coordinates for location search.
 function getUserLocation() {
@@ -203,32 +229,43 @@ function renderforcast(list) {
           <div class="w-[90%] h-[90%] bg-sky-500 rounded-[20px]">
             <div class="flex justify-around items-center">
               <img
-                src="https://openweathermap.org/img/wn/${list[i].weather[0].icon}@2x.png" class="" alt=""
+                src="https://openweathermap.org/img/wn/${
+                  list[0].weather[0].icon
+                }@2x.png" class="" alt=""
               />
               <div class="flex flex-col gap-2">
-                <span class="inline-block w-full text-center text-4xl">${Math.round(list[i].main.temp)}°C</span>
-                <span class="inline-block w-full text-center text-2xl card-date">${formateDate(list[i].dt)}</span>
+                <span class="inline-block w-full text-center text-4xl">${Math.round(
+                  list[i].main.temp
+                )}°C</span>
+                <span class="inline-block w-full text-center text-2xl card-date">${formateDate(
+                  list[i].dt
+                )}</span>
               </div>
             </div>
-            <p class="description w-full text-center">${list[i].weather[0].description}</p>
+            <p class="description text-2xl font-semibold w-full text-center">${
+              list[i].weather[0].description
+            }</p>
             <div
               class="flex justify-between content-center-safe flex-wrap w-[100%] h-[68%] rounded-b-[20px] p-2 text-center"
             >
-              <span class="w-[45%] mb-[10px]">Feels like</span>
-              <span class="w-[45%] mb-[10px]">${list[i].main.feels_like}</span>
-              <span class="w-[45%] mb-[10px]">Wind Speed</span>
-              <span class="w-[45%] mb-[10px]">${list[i].wind.speed} m/s</span>
-              <span class="w-[45%] mb-[10px]">cloudiness</span>
-              <span class="w-[45%] mb-[10px]">${list[i].clouds.all}</span>
-              <span class="w-[45%] mb-[10px]">Humidity</span>
+              <span class="w-[45%] mb-[10px] flex justify-around"><span>Humidity</span><span class="material-symbols-outlined">water_drop</span></span>
               <span class="w-[45%] mb-[10px]">${list[i].main.humidity}</span>
+              <span class="w-[45%] mb-[10px] text-center flex justify-around"><span>wind</span><span class="material-symbols-outlined">air</span></span>
+              <span class="w-[45%] mb-[10px]">${list[i].wind.speed} m/s</span>
+              <span class="w-[45%] mb-[10px] flex justify-around"><span>Temp H</span><span class="material-symbols-outlined">thermometer_add</span></span>
+              <span class="w-[45%] mb-[10px]">${list[i].main.temp_max.toFixed(
+                1
+              )}° C</span>
+              <span class="w-[45%] mb-[10px] flex justify-around"><span>Temp L</span><span class="material-symbols-outlined">thermometer_loss</span></span>
+              <span class="w-[45%] mb-[10px]">${list[i].main.temp_min.toFixed(
+                1
+              )}° C</span>
             </div>
           </div>
         </div>`;
     i = i +8;
     forecastContainer.appendChild(card);
   }
-  console.log(list[0].weather[0].main)
 }
 
 function renderRecentSearch() {
@@ -266,7 +303,7 @@ function populateData(data) {
   maxTemp.dataset.temp = Math.round(data.list[0].main.temp_max);
   humidity.innerText = data.list[0].main.humidity
   windSpeed.innerText = data.list[0].wind.speed;
-  windDirection.innerText = data.list[0].wind.deg;
+  windDirection.innerText = `${data.list[0].wind.deg}°`;
   pressure.innerText = data.list[0].main.pressure;
   cloud.innerText = `${data.list[0].clouds.all} %`
   weatherDescription.innerText = data.list[0].weather[0].description;
@@ -279,6 +316,7 @@ function populateData(data) {
   }
   localStorage.setItem("recent", JSON.stringify(recentSearchArr));
   renderRecentSearch();
+  showAlert(data.list[0].main.temp)
 }
 //Fetch data function fetches the data from API and returns a promise.
 async function fetchData(city) {
@@ -405,3 +443,6 @@ const unit_change_event = unit_change.addEventListener("click", (e)=> {
 const localtion_event = document.querySelector(".location").addEventListener("click", (e)=> {
   getUserLocation();
 })
+
+
+//GitHub:- https://github.com/AtulMishra001/Weather-view

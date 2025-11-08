@@ -8,11 +8,18 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
     />
-    <link rel="stylesheet" href="output.css" />
+    <link rel="stylesheet" href="./output.css" />
   </head>
   <body
-    class=" md:bg-right lg:bg-center bg-cover bg-no-repeat bg-right bg-fixed min-h-screen w-screen text-white flex flex-col gap-3 cursor-default items-center md:text-lg overflow-x-hiddenv"
+    class=" md:bg-right lg:bg-center bg-cover bg-no-repeat bg-right bg-fixed min-h-screen w-screen text-white flex flex-col gap-3 cursor-default items-center md:text-lg overflow-x-hiddenv relative"
   >
+    <div 
+      class="alert w-[220px] h-[50px] grid z-40 border-2 border-l-0 rounded-r-3xl absolute left-0 top-[50px] text-center transition-transform duration-500 ease-in-out transform  -translate-x-full">
+      <p class="self-center flex items-center justify-around p-1 font-semibold">
+        <span class="material-symbols-outlined alert-symbol">emergency_heat</span>
+        <span class="alert-message">ALERT: Extreme Heat</span>
+      </p>
+    </div>
     <header
       class="flex w-full px-4 h-[8%] rounded-xl p-1 justify-between cursor-default items-center max-w-[900px] relative"
     >
@@ -105,7 +112,7 @@
             <span>pressure</span><span class="pressure">31.3</span>
           </p>
           <p class="w-full flex justify-between">
-            <span>wind Direction</span><span class="wind-direction">21°</span>
+            <span>wind Direction</span><span class="wind-direction">21</span>
           </p>
         </div>
       </div>
